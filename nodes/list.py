@@ -6,7 +6,6 @@ import gdb
 
 from nodes.base import BaseNode, Printer
 from utils import (
-    node_tag_from_ptr,
     possible_node_type_names,
     safe_int,
     tag_name,
@@ -74,8 +73,8 @@ def _describe_list_ptr(
     if addr == 0:
         return "NULL", None
 
-    child_tag = node_tag_from_ptr(ptr_val)
-    if child_tag is None:
+    child_tag = tag_name(ptr_val)
+    if child_tag == "<unknown-tag>":
         return f"0x{addr:x}", None
 
     if printer is None:

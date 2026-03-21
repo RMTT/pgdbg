@@ -12,6 +12,11 @@ def safe_int(value: gdb.Value, default: int = 0) -> int:
 
 def tag_name(node_value: gdb.Value) -> str:
     try:
+        node_type = gdb.lookup_type("Node")
+        if node_value.type.strip_typedefs().code == gdb.TYPE_CODE_PTR:
+            node_value = node_value.cast(node_type.pointer()).dereference()
+        else:
+            node_value = node_value.cast(node_type)
         return str(node_value["type"])
     except Exception:
         return "<unknown-tag>"
@@ -61,17 +66,3 @@ def possible_node_type_names(tag: str) -> tuple[str, ...]:
     if not tag.startswith("T_"):
         return ("Node",)
     return (tag.removeprefix("T_"), "Node")
-
-
-def node_tag_from_ptr(ptr_val: gdb.Value) -> str | None:
-    addr = int(ptr_val)
-    if addr == 0:
-        return None
-
-    try:
-        node_ptr = ptr_val.cast(gdb.lookup_type("Node").pointer())
-        tag = tag_name(node_ptr.dereference())
-    except Exception:
-        return None
-
-    return tag if tag.startswith("T_") else None
