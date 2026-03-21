@@ -7,7 +7,7 @@ import gdb
 import nodes.list
 import nodes.query
 from nodes.base import BaseNode
-from utils import is_node_struct, normalize_ptr, tag_name
+from utils import is_char_type, is_node_struct, normalize_ptr, tag_name
 
 TOTAL_NODES = nodes.list.NODES | nodes.query.NODES
 
@@ -20,7 +20,8 @@ class Printer:
 
     def format(self, value: gdb.Value, depth: int = 0) -> str:
         current = normalize_ptr(value)
-        if not current:
+        # current may be int(0) or bool(false), so cannot just use not current
+        if current is None:
             return "NULL"
 
         try:
@@ -30,7 +31,7 @@ class Printer:
 
         if current_type.code == gdb.TYPE_CODE_PTR:
             target = current_type.target().strip_typedefs()
-            if target.code == gdb.TYPE_CODE_CHAR:
+            if is_char_type(target):
                 return self._format_char_ptr(current)
 
         if current_type.code == gdb.TYPE_CODE_STRUCT and is_node_struct(current):

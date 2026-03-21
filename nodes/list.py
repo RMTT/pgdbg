@@ -66,7 +66,7 @@ def _describe_scalar_cell(cell: gdb.Value, tag: str) -> str:
     return str(safe_int(cell["xid_value"]))
 
 
-def _describe_list_ptr(
+def _describe_ptr_cell(
     ptr_val: gdb.Value, printer: Printer | None = None
 ) -> tuple[str, gdb.Value | None]:
     addr = int(ptr_val)
@@ -100,7 +100,7 @@ def _describe_list_cell(
     if tag != "T_List":
         return _describe_scalar_cell(cell, tag)
 
-    rendered, _ = _describe_list_ptr(cell["ptr_value"], printer if detailed else None)
+    rendered, _ = _describe_ptr_cell(cell["ptr_value"], printer if detailed else None)
     return rendered
 
 

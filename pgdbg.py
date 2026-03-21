@@ -34,11 +34,13 @@ class PgPrintCommand(gdb.Command):
             prog="pgprint", add_help=True, allow_abbrev=True, exit_on_error=False
         )
         parser.add_argument(
+            "-p",
             "--position",
             type=int,
             help="print the PostgreSQL list element at POSITION",
         )
         parser.add_argument(
+            "-d",
             "--depth",
             type=int,
             help="limit recursive formatting depth to MAX_DEPTH",

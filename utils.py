@@ -22,6 +22,14 @@ def tag_name(node_value: gdb.Value) -> str:
         return "<unknown-tag>"
 
 
+def is_char_type(value_type: gdb.Type) -> bool:
+    try:
+        target = value_type.strip_typedefs()
+        return target.code == gdb.TYPE_CODE_CHAR or target.name == "char"
+    except Exception:
+        return False
+
+
 def normalize_ptr(value: gdb.Value) -> gdb.Value | None:
     """Get base type from pointer.
 
@@ -33,7 +41,7 @@ def normalize_ptr(value: gdb.Value) -> gdb.Value | None:
         + char *
     """
     while True:
-        current_type = value.type
+        current_type = value.type.strip_typedefs()
         code = current_type.code
 
         if code != gdb.TYPE_CODE_PTR:
@@ -43,7 +51,7 @@ def normalize_ptr(value: gdb.Value) -> gdb.Value | None:
             return None
 
         target = current_type.target().strip_typedefs()
-        if target.code == gdb.TYPE_CODE_VOID or target.code == gdb.TYPE_CODE_CHAR:
+        if target.code == gdb.TYPE_CODE_VOID or is_char_type(target):
             return value
 
         value = value.dereference()
