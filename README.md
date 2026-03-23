@@ -42,8 +42,7 @@ pgprint query
 pgprint --depth 3 query
 pgprint --position 0 query->targetList
 pgprint --depth 2 --position 1 query->rtable
-pgprint ((Node *) query)
-pgprint --depth 2 -- ((Node *) query)
+pgprint ((Node*)query)
 ```
 
 `depth` must be an integer greater than or equal to `1`.
